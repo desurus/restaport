@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Restaport Token Generator</title>
+	<script
+	  src="https://code.jquery.com/jquery-3.2.1.min.js"
+	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	  crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$.ajax({
+				method: "GET",
+				url: "/api/v1.0/tokens"
+			}).done(function(data){
+				if (data == "No active tokens found.") {
+					$("#tokens").append("<tr><td>" + data + "</td></tr>");
+				} else {
+					$.each(data, function(i, t) {
+						console.log(t);
+						$("#tokens").append("<tr><td>" + t.token + "</td><td>" + t.type + "</td><td>" + t.expires + "</td></tr>");
+					});
+				}
+			});
+
+			/* form submit */
+			$("#form").submit(function(e){
+				console.log("submitting the form via ajax ...");
+				
+				$.ajax({
+					type: "POST",
+					url: "/api/v1.0/token",
+					data: $("#form").serialize(),
+				}).done(function(data){
+					console.log(data);
+					/* reload the page */
+					location.reload();
+				});
+				
+				e.preventDefault();
+			});
+		});
+	</script>
+	<style type="text/css">
+		tbody {
+			font-family: "Courier New", Courier, monospace;
+			font-size: 0.8em;
+		}
+	</style>
+</head>
+<body>
+	<h2>Teleport auth server token generator</h2>
+	<p>Fill in the form below to generate a auth token to add new nodes to the Teleport cluster.</p>
+	<form action="/api/v1.0/token" method="POST" id="form">
+		<label>
+			TTL for the token(minutes):<br/>
+			<input type="number" name="ttl"/>
+		</label>
+		<button type="submit">SUBMIT</button>
+	</form><br/><br/>
+	<table>
+		<thead>
+			<tr>
+				<th width="350" align="left">Token</th>
+				<th width="200" align="left">Type</th>
+				<th width="200" align="left">Expires</th>
+			</tr>
+		</thead>
+		<tbody id="tokens"></tbody>
+	</table>
+</body>
+</html>
