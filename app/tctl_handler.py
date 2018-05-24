@@ -21,7 +21,7 @@ class TctlHandler:
 			if "Token" in l or "---" in l:
 				continue
 			# parse line for works
-			m = re.search('(\w+) (\w+,{0,1}\w+) (.*)', l)
+			m = re.search('(\w+)\s+(\w+,{0,1}\w+)\s+(.*)', l)
 			result.append({
 				"token": m.group(1).strip(),
 				"type": m.group(2).strip(),
